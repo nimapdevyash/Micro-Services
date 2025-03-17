@@ -24,7 +24,7 @@ async function createUser(req, res) {
 }
 
 async function deleteUser(req, res) {
-  const { username } = req.body;
+  const { username } = req.params;
 
   if (!username) {
     return res.status(404).json({
@@ -48,7 +48,7 @@ async function deleteUser(req, res) {
 }
 
 async function getUser(req, res) {
-  const { username } = req.body;
+  const { username } = req.params;
 
   if (!username) {
     return res.status(404).json({
@@ -70,6 +70,14 @@ async function getUser(req, res) {
   });
 }
 
+async function getAllUsers(req, res) {
+  const allUsers = await User.findAndCountAll({ where: {} });
+  return res.status(200).json({
+    message: "all users are fetched successfully",
+    data: allUsers,
+  });
+}
+
 function wrapper(fn) {
   return async function (...args) {
     try {
@@ -77,7 +85,7 @@ function wrapper(fn) {
       return result;
     } catch (error) {
       console.log(error);
-      return res.status(500).send(error.message);
+      return args[1].status(400).send(error.message);
     }
   };
 }
@@ -86,4 +94,5 @@ module.exports = {
   createUser: wrapper(createUser),
   getUser: wrapper(getUser),
   deleteUser: wrapper(deleteUser),
+  getAllUsers: wrapper(getAllUsers),
 };
