@@ -1,16 +1,14 @@
 const express = require("express");
+const { sequelize, connectToDB } = require("./db");
+const userRouter = require("./router");
+
+connectToDB();
+sequelize.sync({ force: true });
 
 const app = express();
 
-app.get("/users", (req, res) => {
-  res.status(200).json({
-    message: "Users service",
-    data: [
-      { name: "some random user" },
-      { name: "some random user" },
-      { name: "some random user" },
-    ],
-  });
-});
+app.use(express.json());
+
+app.use("/", userRouter);
 
 app.listen(3002, () => console.log("user is live on 3002"));
