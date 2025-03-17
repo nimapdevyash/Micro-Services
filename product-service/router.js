@@ -4,11 +4,13 @@ const {
   createProduct,
   deleteProduct,
   getProduct,
+  getAllProducts,
 } = require("./controller");
 
 const router = express.Router();
 
-router.route("/").get(getProduct).post(createProduct).delete(deleteProduct);
-router.route("/all").get(getAllProductOfOwner);
+router.route("/").get(getAllProducts).post(createProduct);
+router.route("/:id").get(getProduct).delete(deleteProduct);
+router.route("/user/:username").get(getAllProductOfOwner);
 
 module.exports = router;

@@ -35,7 +35,7 @@ async function createProduct(req, res) {
 }
 
 async function getProduct(req, res) {
-  const { id } = req.body;
+  const { id } = req.params;
 
   if (!id) {
     return res.status(404).json({
@@ -58,7 +58,7 @@ async function getProduct(req, res) {
 }
 
 async function deleteProduct(req, res) {
-  const { id } = req.body;
+  const { id } = req.params;
 
   if (!id) {
     return res.status(404).json({
@@ -80,26 +80,11 @@ async function deleteProduct(req, res) {
 }
 
 async function getAllProductOfOwner(req, res) {
-  const { username } = req.body;
+  const { username } = req.params;
 
   if (!username) {
     return res.status(404).json({
       message: "all credentials are required",
-    });
-  }
-
-  const user = await axios("http://localhost:3002", {
-    method: "Get",
-    data: {
-      username,
-    },
-  });
-
-  console.log("user : ", user);
-
-  if (!user) {
-    return res.status(404).json({
-      message: "user does not exist",
     });
   }
 
@@ -117,9 +102,25 @@ async function getAllProductOfOwner(req, res) {
   });
 }
 
+async function getAllProducts(req, res) {
+  const products = await Product.findAndCountAll({ where: {} });
+
+  if (!products || products.count == 0) {
+    return res.status(404).json({
+      message: "products does not exist",
+    });
+  }
+
+  return res.status(200).json({
+    message: "product is fetched successfully",
+    data: products,
+  });
+}
+
 module.exports = {
   getProduct: wrapper(getProduct),
   createProduct: wrapper(createProduct),
   deleteProduct: wrapper(deleteProduct),
   getAllProductOfOwner: wrapper(getAllProductOfOwner),
+  getAllProducts: wrapper(getAllProducts),
 };

@@ -3,7 +3,7 @@ const { sequelize, connectToDB } = require("./db");
 const productRouter = require("./router");
 
 connectToDB();
-sequelize.sync();
+sequelize.sync({ force: true });
 
 const app = express();
 
