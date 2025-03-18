@@ -7,8 +7,10 @@ function wrapper(fn) {
       const result = await fn(...args);
       return result;
     } catch (error) {
-      console.log(error);
-      args[1].send(error.message);
+      return args[1].status(500).json({
+        success: false,
+        message: error.message,
+      });
     }
   };
 }
@@ -17,7 +19,8 @@ async function createProduct(req, res) {
   const { name, owner } = req.body;
 
   if (!name || !owner) {
-    return res.status(404).json({
+    return res.status(400).json({
+      success: false,
       message: "all credentials are required",
     });
   }
@@ -29,6 +32,7 @@ async function createProduct(req, res) {
   }
 
   return res.status(200).json({
+    success: true,
     message: "product is created successfully",
     data: product,
   });
@@ -38,7 +42,8 @@ async function getProduct(req, res) {
   const { id } = req.params;
 
   if (!id) {
-    return res.status(404).json({
+    return res.status(400).json({
+      success: false,
       message: "all credentials are required",
     });
   }
@@ -47,11 +52,13 @@ async function getProduct(req, res) {
 
   if (!product) {
     return res.status(404).json({
+      success: false,
       message: "product does not exist",
     });
   }
 
   return res.status(200).json({
+    success: true,
     message: "product is fetched successfully",
     data: product,
   });
@@ -61,7 +68,8 @@ async function deleteProduct(req, res) {
   const { id } = req.params;
 
   if (!id) {
-    return res.status(404).json({
+    return res.status(400).json({
+      success: false,
       message: "all credentials are required",
     });
   }
@@ -75,6 +83,7 @@ async function deleteProduct(req, res) {
   await product.destroy();
 
   return res.status(200).json({
+    success: true,
     message: "product deleted sucdessfully",
   });
 }
@@ -83,7 +92,8 @@ async function getAllProductOfOwner(req, res) {
   const { username } = req.params;
 
   if (!username) {
-    return res.status(404).json({
+    return res.status(400).json({
+      success: false,
       message: "all credentials are required",
     });
   }
@@ -91,12 +101,14 @@ async function getAllProductOfOwner(req, res) {
   const products = await Product.findAll({ where: { owner: username } });
 
   if (!products || products.length == 0) {
-    return res.status(500).json({
+    return res.status(404).json({
+      success: false,
       message: "no products found",
     });
   }
 
   return res.status(200).json({
+    success: true,
     message: "all products fetched successfully",
     data: products,
   });
@@ -107,11 +119,13 @@ async function getAllProducts(req, res) {
 
   if (!products || products.count == 0) {
     return res.status(404).json({
+      success: false,
       message: "products does not exist",
     });
   }
 
   return res.status(200).json({
+    success: true,
     message: "product is fetched successfully",
     data: products,
   });
