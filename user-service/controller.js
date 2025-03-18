@@ -1,4 +1,5 @@
 const User = require("./model");
+const wrapper = require("../wrapper");
 
 async function createUser(req, res) {
   const { username, age } = req.body;
@@ -86,20 +87,6 @@ async function getAllUsers(req, res) {
     message: "all users are fetched successfully",
     data: allUsers,
   });
-}
-
-function wrapper(fn) {
-  return async function (...args) {
-    try {
-      const result = await fn(...args);
-      return result;
-    } catch (error) {
-      return args[1].status(500).json({
-        success: false,
-        message: error.message,
-      });
-    }
-  };
 }
 
 module.exports = {

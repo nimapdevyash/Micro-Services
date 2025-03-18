@@ -3,11 +3,12 @@ const { sequelize, connectToDB } = require("./db");
 const userRouter = require("./router");
 
 connectToDB();
-sequelize.sync({ force: true });
+sequelize.sync();
 
 const app = express();
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 app.use("/", userRouter);
 

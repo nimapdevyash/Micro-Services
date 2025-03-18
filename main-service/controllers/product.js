@@ -1,5 +1,6 @@
-const wrapper = require("../wrapper");
-const Product = require("./model");
+const { Producturl } = require("../../urls");
+const wrapper = require("./../../wrapper");
+const axios = require("axios");
 
 async function createProduct(req, res) {
   const { name, owner } = req.body;
@@ -11,17 +12,12 @@ async function createProduct(req, res) {
     });
   }
 
-  const product = await Product.create({ owner, name });
-
-  if (!product) {
-    throw new Error("product is not created");
-  }
-
-  return res.status(200).json({
-    success: true,
-    message: "product is created successfully",
-    data: product,
+  const response = await axios.post(Producturl, {
+    name,
+    owner,
   });
+
+  return res.status(200).json(response.data);
 }
 
 async function getProduct(req, res) {
@@ -34,20 +30,9 @@ async function getProduct(req, res) {
     });
   }
 
-  const product = await Product.findByPk(id);
+  const response = await axios.get(`${Producturl}/${id}`);
 
-  if (!product) {
-    return res.status(404).json({
-      success: false,
-      message: "product does not exist",
-    });
-  }
-
-  return res.status(200).json({
-    success: true,
-    message: "product is fetched successfully",
-    data: product,
-  });
+  return res.status(200).json(response.data);
 }
 
 async function deleteProduct(req, res) {
@@ -60,13 +45,7 @@ async function deleteProduct(req, res) {
     });
   }
 
-  const product = await Product.findByPk(id);
-
-  if (!product) {
-    throw new Error("product does not exists");
-  }
-
-  await product.destroy();
+  await axios.delete(`${Producturl}/${id}`);
 
   return res.status(200).json({
     success: true,
@@ -84,25 +63,15 @@ async function getAllProductOfOwner(req, res) {
     });
   }
 
-  const products = await Product.findAndCountAll({
-    where: { owner: username },
-  });
+  const response = await axios.get(`${Producturl}/user/${username}`);
 
-  return res.status(200).json({
-    success: true,
-    message: "all products for user fetched successfully",
-    data: products,
-  });
+  return res.status(200).json(response.data);
 }
 
 async function getAllProducts(req, res) {
-  const products = await Product.findAndCountAll({ where: {} });
+  const products = await axios.get(Producturl);
 
-  return res.status(200).json({
-    success: true,
-    message: "product are fetched successfully",
-    data: products,
-  });
+  return res.status(200).json(products.data);
 }
 
 module.exports = {
