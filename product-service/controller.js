@@ -98,14 +98,9 @@ async function getAllProductOfOwner(req, res) {
     });
   }
 
-  const products = await Product.findAll({ where: { owner: username } });
-
-  if (!products || products.length == 0) {
-    return res.status(404).json({
-      success: false,
-      message: "no products found",
-    });
-  }
+  const products = await Product.findAndCountAll({
+    where: { owner: username },
+  });
 
   return res.status(200).json({
     success: true,
@@ -118,7 +113,7 @@ async function getAllProducts(req, res) {
   const products = await Product.findAndCountAll({ where: {} });
 
   if (!products || products.count == 0) {
-    return res.status(404).json({
+    return res.status(200).json({
       success: false,
       message: "products does not exist",
     });
